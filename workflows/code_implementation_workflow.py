@@ -37,9 +37,9 @@ from utils.llm_utils import get_preferred_llm_class, get_default_models
 # DialogueLogger removed - no longer needed
 
 # Import necessary LLM classes
-from mcp_agent.workflows.llm.augmented_llm_anthropic import AnthropicAugmentedLLM
-from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
+# Removed: from mcp_agent.workflows.llm.augmented_llm_anthropic import AnthropicAugmentedLLM
+# Removed: from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 
 
 class CodeImplementationWorkflow:
@@ -320,7 +320,7 @@ Requirements:
         code_agent.set_memory_agent(memory_agent, client, client_type)
 
         # Initialize memory agent with iteration 0
-        memory_agent.start_new_round(iteration=0)
+        memory_agent.start_new_round(iteration=iteration)
 
         while iteration < max_iterations:
             iteration += 1
@@ -495,84 +495,27 @@ Requirements:
                 self.mcp_agent = None
 
     async def _initialize_llm_client(self):
-        """Initialize LLM client (Anthropic or OpenAI) based on API key availability"""
-        # Check which API has available key and try that first
-        anthropic_key = self.api_config.get("anthropic", {}).get("api_key", "")
-        openai_key = self.api_config.get("openai", {}).get("api_key", "")
+        """Initialize LLM client (Gemini only) based on API key availability"""
+        # Check for gemini key only
         gemini_key = self.api_config.get("gemini", {}).get("api_key", "")
 
-        # Try Gemini API first if key is available
+        # Try Gemini API
         if gemini_key and gemini_key.strip():
             try:
                 from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
                 client = GeminiAugmentedLLM(api_key=gemini_key)
+                
+                # Simple check relying on successful class initialization
+                
                 self.logger.info("Using Gemini API with GeminiAugmentedLLM")
                 return client, "gemini"
             except Exception as e:
-                self.logger.warning(f"Gemini API unavailable: {e}")
-
-        # Try Anthropic API first if key is available
-        if anthropic_key and anthropic_key.strip():
-            try:
-                from anthropic import AsyncAnthropic
-
-                client = AsyncAnthropic(api_key=anthropic_key)
-                # Test connection with default model from config
-                await client.messages.create(
-                    model=self.default_models["anthropic"],
-                    max_tokens=20,
-                    messages=[{"role": "user", "content": "test"}],
-                )
-                self.logger.info(
-                    f"Using Anthropic API with model: {self.default_models['anthropic']}"
-                )
-                return client, "anthropic"
-            except Exception as e:
-                self.logger.warning(f"Anthropic API unavailable: {e}")
-
-        # Try OpenAI API if Anthropic failed or key not available
-        if openai_key and openai_key.strip():
-            try:
-                from openai import AsyncOpenAI
-
-                # Handle custom base_url if specified
-                openai_config = self.api_config.get("openai", {})
-                base_url = openai_config.get("base_url")
-
-                if base_url:
-                    client = AsyncOpenAI(api_key=openai_key, base_url=base_url)
-                else:
-                    client = AsyncOpenAI(api_key=openai_key)
-
-                # Test connection with default model from config
-                # Try max_tokens first, fallback to max_completion_tokens if unsupported
-                try:
-                    await client.chat.completions.create(
-                        model=self.default_models["openai"],
-                        max_tokens=20,
-                        messages=[{"role": "user", "content": "test"}],
-                    )
-                except Exception as e:
-                    if "max_tokens" in str(e) and "max_completion_tokens" in str(e):
-                        # Retry with max_completion_tokens for models that require it
-                        await client.chat.completions.create(
-                            model=self.default_models["openai"],
-                            max_completion_tokens=20,
-                            messages=[{"role": "user", "content": "test"}],
-                        )
-                    else:
-                        raise
-                self.logger.info(
-                    f"Using OpenAI API with model: {self.default_models['openai']}"
-                )
-                if base_url:
-                    self.logger.info(f"Using custom base URL: {base_url}")
-                return client, "openai"
-            except Exception as e:
-                self.logger.warning(f"OpenAI API unavailable: {e}")
-
+                self.logger.warning(f"Gemini API initialization failed: {e}")
+                # Fallthrough to final error if necessary
+        
+        # Raise error if no key found (since this is Gemini-exclusive now)
         raise ValueError(
-            "No available LLM API - please check your API keys in configuration"
+            "No available LLM API - Gemini API key not found in mcp_agent.secrets.yaml"
         )
 
     async def _call_llm_with_tools(
@@ -580,20 +523,13 @@ Requirements:
     ):
         """Call LLM with tools"""
         try:
-            if client_type == "anthropic":
-                return await self._call_anthropic_with_tools(
-                    client, system_message, messages, tools, max_tokens
-                )
-            elif client_type == "openai":
-                return await self._call_openai_with_tools(
-                    client, system_message, messages, tools, max_tokens
-                )
-            elif client_type == "gemini":
-                # Assuming a similar structure for a hypothetical Gemini tool-calling client
+            if client_type == "gemini":
+                # Route to the dedicated Gemini call handler
                 return await self._call_gemini_with_tools(
                     client, system_message, messages, tools, max_tokens
                 )
             else:
+                # This should not happen if _initialize_llm_client is correct
                 raise ValueError(f"Unsupported client type: {client_type}")
         except Exception as e:
             self.logger.error(f"LLM call failed: {e}")
@@ -602,102 +538,36 @@ Requirements:
     async def _call_gemini_with_tools(
         self, client, system_message, messages, tools, max_tokens
     ):
-        """Hypothetical call to a Gemini API with tools"""
-        # This is a placeholder for a real implementation
-        pass
+        """Call Gemini API"""
+        # This implementation assumes that the client object is the initialized GeminiAugmentedLLM 
+        # which wraps the actual Google GenAI SDK client and handles the tool formatting.
 
-    async def _call_anthropic_with_tools(
-        self, client, system_message, messages, tools, max_tokens
-    ):
-        """Call Anthropic API"""
         validated_messages = self._validate_messages(messages)
-        if not validated_messages:
-            validated_messages = [
-                {"role": "user", "content": "Please continue implementing code"}
-            ]
 
         try:
-            response = await client.messages.create(
-                model=self.default_models["anthropic"],
-                system=system_message,
+            # The GeminiAugmentedLLM class must expose a method (like chat_with_tools)
+            # that handles the system prompt, messages, tools, and returns the unified format.
+            response = await client.chat_with_tools(
+                model=self.default_models["gemini"],
+                system_message=system_message,
                 messages=validated_messages,
                 tools=tools,
                 max_tokens=max_tokens,
                 temperature=0.2,
             )
+            
+            # The custom class must return the unified format: {"content": content, "tool_calls": tool_calls}
+            content = response.get("content", "")
+            tool_calls = response.get("tool_calls", [])
+            
+            return {"content": content, "tool_calls": tool_calls}
+
         except Exception as e:
-            self.logger.error(f"Anthropic API call failed: {e}")
+            self.logger.error(f"Gemini API call failed: {e}")
             raise
 
-        content = ""
-        tool_calls = []
-
-        for block in response.content:
-            if block.type == "text":
-                content += block.text
-            elif block.type == "tool_use":
-                tool_calls.append(
-                    {"id": block.id, "name": block.name, "input": block.input}
-                )
-
-        return {"content": content, "tool_calls": tool_calls}
-
-    async def _call_openai_with_tools(
-        self, client, system_message, messages, tools, max_tokens
-    ):
-        """Call OpenAI API"""
-        openai_tools = []
-        for tool in tools:
-            openai_tools.append(
-                {
-                    "type": "function",
-                    "function": {
-                        "name": tool["name"],
-                        "description": tool["description"],
-                        "parameters": tool["input_schema"],
-                    },
-                }
-            )
-
-        openai_messages = [{"role": "system", "content": system_message}]
-        openai_messages.extend(messages)
-
-        # Try max_tokens first, fallback to max_completion_tokens if unsupported
-        try:
-            response = await client.chat.completions.create(
-                model=self.default_models["openai"],
-                messages=openai_messages,
-                tools=openai_tools if openai_tools else None,
-                max_tokens=max_tokens,
-                temperature=0.2,
-            )
-        except Exception as e:
-            if "max_tokens" in str(e) and "max_completion_tokens" in str(e):
-                # Retry with max_completion_tokens for models that require it
-                response = await client.chat.completions.create(
-                    model=self.default_models["openai"],
-                    messages=openai_messages,
-                    tools=openai_tools if openai_tools else None,
-                    max_completion_tokens=max_tokens,
-                )
-            else:
-                raise
-
-        message = response.choices[0].message
-        content = message.content or ""
-
-        tool_calls = []
-        if message.tool_calls:
-            for tool_call in message.tool_calls:
-                tool_calls.append(
-                    {
-                        "id": tool_call.id,
-                        "name": tool_call.function.name,
-                        "input": json.loads(tool_call.function.arguments),
-                    }
-                )
-
-        return {"content": content, "tool_calls": tool_calls}
+    # Removed: async def _call_anthropic_with_tools
+    # Removed: async def _call_openai_with_tools
 
     # ==================== 5. Tools and Utility Methods (Utility Layer) ====================
 
@@ -994,7 +864,7 @@ async def main():
         print("=" * 60)
         print("Workflow Execution Results:")
         print(f"Status: {result['status']}")
-            print(f"Mode: {mode_name}")
+        print(f"Mode: {mode_name}")
 
         if result["status"] == "success":
             print(f"Code Directory: {result['code_directory']}")

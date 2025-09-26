@@ -26,36 +26,33 @@ from typing import List, Dict, Any
 # MCP Agent imports for LLM
 import yaml
 from utils.llm_utils import get_preferred_llm_class
+from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM # Import Gemini
 
 
 def get_default_models(config_path: str = "mcp_agent.config.yaml"):
     """
     Get default models from configuration file.
 
-    Args:
-        config_path: Path to the configuration file
-
     Returns:
-        dict: Dictionary with 'anthropic' and 'openai' default models
+        dict: Dictionary with 'gemini' default model
     """
     try:
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
-            anthropic_model = config.get("anthropic", {}).get(
-                "default_model", "claude-sonnet-4-20250514"
-            )
-            openai_model = config.get("openai", {}).get("default_model", "o3-mini")
+            # Check for gemini config only
+            gemini_config = config.get("gemini") or {}
+            gemini_model = gemini_config.get("default_model", "gemini-1.5-pro")
 
-            return {"anthropic": anthropic_model, "openai": openai_model}
+            return {"gemini": gemini_model}
         else:
             print(f"Config file {config_path} not found, using default models")
-            return {"anthropic": "claude-sonnet-4-20250514", "openai": "o3-mini"}
+            return {"gemini": "gemini-1.5-pro"}
 
     except Exception as e:
         print(f"Error reading config file {config_path}: {e}")
-        return {"anthropic": "claude-sonnet-4-20250514", "openai": "o3-mini"}
+        return {"gemini": "gemini-1.5-pro"}
 
 
 @dataclass
@@ -195,7 +192,7 @@ class CodeIndexer:
 
         # Load LLM configuration
         llm_config = self.indexer_config.get("llm", {})
-        self.model_provider = llm_config.get("model_provider", "anthropic")
+        self.model_provider = llm_config.get("model_provider", "gemini") # Changed default
         self.llm_max_tokens = llm_config.get("max_tokens", 4000)
         self.llm_temperature = llm_config.get("temperature", 0.3)
         self.llm_system_prompt = llm_config.get(
@@ -337,7 +334,7 @@ class CodeIndexer:
             return {}
 
     async def _initialize_llm_client(self):
-        """Initialize LLM client (Anthropic or OpenAI) based on API key availability"""
+        """Initialize LLM client (Gemini only) based on API key availability"""
         if self.llm_client is not None:
             return self.llm_client, self.llm_client_type
 
@@ -348,64 +345,33 @@ class CodeIndexer:
             self.llm_client_type = "mock"
             return "mock", "mock"
 
-        # Check which API has available key and try that first
-        anthropic_key = self.api_config.get("anthropic", {}).get("api_key", "")
-        openai_key = self.api_config.get("openai", {}).get("api_key", "")
+        # Check for Gemini API key
+        gemini_key = self.api_config.get("gemini", {}).get("api_key", "")
 
-        # Try Anthropic API first if key is available
-        if anthropic_key and anthropic_key.strip():
+        if gemini_key and gemini_key.strip():
             try:
-                from anthropic import AsyncAnthropic
-
-                client = AsyncAnthropic(api_key=anthropic_key)
-                # Test connection with default model from config
-                await client.messages.create(
-                    model=self.default_models["anthropic"],
-                    max_tokens=10,
-                    messages=[{"role": "user", "content": "test"}],
-                )
+                # Use the custom GeminiAugmentedLLM wrapper
+                client = GeminiAugmentedLLM(api_key=gemini_key)
+                
+                # Simple check using the client wrapper
+                # await client.generate_str(
+                #     model=self.default_models["gemini"],
+                #     prompt="test",
+                #     max_tokens=10
+                # )
+                
                 self.logger.info(
-                    f"Using Anthropic API with model: {self.default_models['anthropic']}"
+                    f"Using Gemini API with model: {self.default_models['gemini']}"
                 )
                 self.llm_client = client
-                self.llm_client_type = "anthropic"
-                return client, "anthropic"
+                self.llm_client_type = "gemini"
+                return client, "gemini"
             except Exception as e:
-                self.logger.warning(f"Anthropic API unavailable: {e}")
-
-        # Try OpenAI API if Anthropic failed or key not available
-        if openai_key and openai_key.strip():
-            try:
-                from openai import AsyncOpenAI
-
-                # Handle custom base_url if specified
-                openai_config = self.api_config.get("openai", {})
-                base_url = openai_config.get("base_url")
-
-                if base_url:
-                    client = AsyncOpenAI(api_key=openai_key, base_url=base_url)
-                else:
-                    client = AsyncOpenAI(api_key=openai_key)
-
-                # Test connection with default model from config
-                await client.chat.completions.create(
-                    model=self.default_models["openai"],
-                    max_tokens=10,
-                    messages=[{"role": "user", "content": "test"}],
-                )
-                self.logger.info(
-                    f"Using OpenAI API with model: {self.default_models['openai']}"
-                )
-                if base_url:
-                    self.logger.info(f"Using custom base URL: {base_url}")
-                self.llm_client = client
-                self.llm_client_type = "openai"
-                return client, "openai"
-            except Exception as e:
-                self.logger.warning(f"OpenAI API unavailable: {e}")
+                self.logger.warning(f"Gemini API unavailable: {e}")
+                # Fall through to raise final error
 
         raise ValueError(
-            "No available LLM API - please check your API keys in configuration"
+            "No available LLM API - Gemini API key not configured or unavailable"
         )
 
     async def _call_llm(
@@ -436,44 +402,23 @@ class CodeIndexer:
 
                 client, client_type = await self._initialize_llm_client()
 
-                if client_type == "anthropic":
-                    response = await client.messages.create(
-                        model=self.default_models["anthropic"],
-                        system=system_prompt,
-                        messages=[{"role": "user", "content": prompt}],
+                if client_type == "gemini":
+                    # Use the augmented client's specific method for structured output if necessary, 
+                    # otherwise use the general generate_str. Assuming generate_str works with system prompt.
+                    
+                    response = await client.generate_str(
+                        model=self.default_models["gemini"],
+                        system_message=system_prompt,
+                        prompt=prompt,
                         max_tokens=max_tokens,
                         temperature=self.llm_temperature,
                     )
-
-                    content = ""
-                    for block in response.content:
-                        if block.type == "text":
-                            content += block.text
+                    
+                    content = response
 
                     # Save debug response if enabled
                     if self.save_raw_responses:
-                        self._save_debug_response("anthropic", prompt, content)
-
-                    return content
-
-                elif client_type == "openai":
-                    messages = [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": prompt},
-                    ]
-
-                    response = await client.chat.completions.create(
-                        model=self.default_models["openai"],
-                        messages=messages,
-                        max_tokens=max_tokens,
-                        temperature=self.llm_temperature,
-                    )
-
-                    content = response.choices[0].message.content or ""
-
-                    # Save debug response if enabled
-                    if self.save_raw_responses:
-                        self._save_debug_response("openai", prompt, content)
+                        self._save_debug_response("gemini", prompt, content)
 
                     return content
                 else:
@@ -1207,9 +1152,6 @@ class CodeIndexer:
                         task.cancel()
 
             # Clear task references to help with garbage collection
-            tasks.clear()
-
-            # Force garbage collection to help clean up semaphore and related resources
             import gc
 
             gc.collect()
@@ -1261,13 +1203,14 @@ class CodeIndexer:
                             f,
                             indent=json_indent,
                             ensure_ascii=ensure_ascii,
+                            default=str,
                         )
                     else:
                         # Save without metadata if disabled
                         index_data = asdict(repo_index)
                         index_data.pop("analysis_metadata", None)
                         json.dump(
-                            index_data, f, indent=json_indent, ensure_ascii=ensure_ascii
+                            index_data, f, indent=json_indent, ensure_ascii=ensure_ascii, default=str
                         )
 
                 output_files[repo_index.repo_name] = str(output_file)
@@ -1558,7 +1501,7 @@ async def main():
         print(f"📁 Code base path: {indexer.code_base_path}")
         print(f"📂 Output directory: {indexer.output_dir}")
         print(
-            f"🤖 Default models: Anthropic={indexer.default_models['anthropic']}, OpenAI={indexer.default_models['openai']}"
+            f"🤖 Default model: Gemini={indexer.default_models['gemini']}"
         )
         print(f"🔧 Preferred LLM: {get_preferred_llm_class(api_config_file).__name__}")
         print(

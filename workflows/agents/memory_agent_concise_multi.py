@@ -67,10 +67,9 @@ class ConciseMemoryAgent:
         self.initial_plan = initial_plan_content
         self.max_files_per_batch = max_files_per_batch
 
-        # Store default models configuration
+        # Store default models configuration (Gemini only)
         self.default_models = default_models or {
-            "anthropic": "claude-sonnet-4-20250514",
-            "openai": "gpt-4o",
+            "gemini": "gemini-1.5-pro",
         }
 
         # Memory state tracking - new logic: trigger after each write_multiple_files
@@ -131,7 +130,7 @@ class ConciseMemoryAgent:
 
         Args:
             client: LLM client instance
-            client_type: Type of LLM client ("anthropic" or "openai")
+            client_type: Type of LLM client ("gemini" only now)
             file_implementations: Dictionary mapping file_path to implementation_content
             files_implemented: Number of files implemented so far
             implemented_files: List of all implemented files (from workflow)
@@ -227,14 +226,6 @@ class ConciseMemoryAgent:
     ) -> str:
         """
         Create prompt for LLM to generate multi-file code implementation summary
-
-        Args:
-            file_implementations: Dictionary mapping file_path to implementation_content
-            files_implemented: Number of files implemented so far
-            implemented_files: List of all implemented files (from workflow)
-
-        Returns:
-            Prompt for LLM multi-file summarization
         """
 
         # Format file lists using workflow data
@@ -511,14 +502,6 @@ class ConciseMemoryAgent:
     ) -> str:
         """
         Format the LLM-generated summary into the final structure
-
-        Args:
-            file_path: Path of the implemented file
-            llm_summary: LLM-generated summary content
-            files_implemented: Number of files implemented so far
-
-        Returns:
-            Formatted summary
         """
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -538,13 +521,6 @@ class ConciseMemoryAgent:
     ) -> str:
         """
         Create fallback multi-file summary when LLM is unavailable
-
-        Args:
-            file_implementations: Dictionary mapping file_path to implementation_content
-            files_implemented: Number of files implemented so far
-
-        Returns:
-            Fallback multi-file summary
         """
         # Create fallback summaries for each file
         fallback_summaries = []
@@ -566,11 +542,6 @@ class ConciseMemoryAgent:
     async def _save_code_summary_to_file(self, new_summary: str, file_path: str):
         """
         Append code implementation summary to implement_code_summary.md
-        Accumulates all implementations with clear separators
-
-        Args:
-            new_summary: New summary content to append
-            file_path: Path of the file for which the summary was generated
         """
         try:
             # Create directory if it doesn't exist
@@ -607,40 +578,21 @@ class ConciseMemoryAgent:
     ) -> Dict[str, Any]:
         """
         Call LLM for code implementation summary generation ONLY
-
-        This method is used only for creating code implementation summaries,
-        NOT for conversation summarization which has been removed.
+        (Gemini only)
         """
-        if client_type == "anthropic":
-            response = await client.messages.create(
-                model=self.default_models["anthropic"],
-                system="You are an expert code implementation summarizer. Create structured summaries of implemented code files that preserve essential information about functions, dependencies, and implementation approaches.",
-                messages=summary_messages,
-                max_tokens=8000,  # Increased for multi-file support
-                temperature=0.2,
-            )
-
-            content = ""
-            for block in response.content:
-                if block.type == "text":
-                    content += block.text
-
-            return {"content": content}
-
-        elif client_type == "openai":
-            openai_messages = [
+        if client_type == "gemini":
+            messages = [
                 {
                     "role": "system",
                     "content": "You are an expert code implementation summarizer. Create structured summaries of implemented code files that preserve essential information about functions, dependencies, and implementation approaches.",
                 }
             ]
-            openai_messages.extend(summary_messages)
+            messages.extend(summary_messages)
 
-            # Try max_tokens and temperature first, fallback to max_completion_tokens without temperature if unsupported
             try:
                 response = await client.chat.completions.create(
-                    model=self.default_models["openai"],
-                    messages=openai_messages,
+                    model=self.default_models["gemini"],
+                    messages=messages,
                     max_tokens=8000,  # Increased for multi-file support
                     temperature=0.2,
                 )
@@ -648,8 +600,8 @@ class ConciseMemoryAgent:
                 if "max_tokens" in str(e) and "max_completion_tokens" in str(e):
                     # Retry with max_completion_tokens and no temperature for models that require it
                     response = await client.chat.completions.create(
-                        model=self.default_models["openai"],
-                        messages=openai_messages,
+                        model=self.default_models["gemini"],
+                        messages=messages,
                         max_completion_tokens=8000,  # Increased for multi-file support
                     )
                 else:
@@ -661,11 +613,7 @@ class ConciseMemoryAgent:
             raise ValueError(f"Unsupported client type: {client_type}")
 
     def start_new_round(self, iteration: Optional[int] = None):
-        """Start a new dialogue round and reset tool results
-
-        Args:
-            iteration: Optional iteration number from workflow to sync with current_round
-        """
+        """Start a new dialogue round and reset tool results"""
         if iteration is not None:
             # Sync with workflow iteration
             self.current_round = iteration
@@ -681,11 +629,6 @@ class ConciseMemoryAgent:
     ):
         """
         Record tool result for current round and detect write_multiple_files calls
-
-        Args:
-            tool_name: Name of the tool called
-            tool_input: Input parameters for the tool
-            tool_result: Result returned by the tool
         """
         # Detect write_multiple_files calls to trigger memory clearing
         if tool_name == "write_multiple_files":
@@ -715,9 +658,6 @@ class ConciseMemoryAgent:
     def should_use_concise_mode(self) -> bool:
         """
         Check if concise memory mode should be used
-
-        Returns:
-            True if first batch has been generated and concise mode should be active
         """
         return self.last_write_multiple_files_detected
 
@@ -734,20 +674,6 @@ class ConciseMemoryAgent:
     ) -> List[Dict[str, Any]]:
         """
         Create concise message list for LLM input specifically for revision execution
-        ALIGNED with _execute_multi_file_batch_revision in code_evaluation_workflow
-
-        Args:
-            system_prompt: Current system prompt
-            messages: Original message list
-            files_implemented: Number of files implemented so far
-            task_description: Description of the current task
-            file_batch: Files to implement in this batch
-            is_first_batch: Whether this is the first batch (use file_batch) or subsequent
-            implemented_files: List of all implemented files (from workflow)
-            all_files: List of all files that should be implemented (from workflow)
-
-        Returns:
-            Concise message list containing only essential information for revision
         """
         # Use empty lists if not provided
         if implemented_files is None:
@@ -834,13 +760,6 @@ class ConciseMemoryAgent:
     ) -> Dict[str, Any]:
         """
         Calculate statistics for a message list
-
-        Args:
-            messages: List of messages to analyze
-            label: Label for logging
-
-        Returns:
-            Dictionary with statistics
         """
         total_chars = 0
         total_words = 0
@@ -868,13 +787,6 @@ class ConciseMemoryAgent:
     ) -> Dict[str, Any]:
         """
         Calculate memory savings between original and optimized messages
-
-        Args:
-            original_stats: Statistics for original messages
-            optimized_stats: Statistics for optimized messages
-
-        Returns:
-            Dictionary with savings calculations
         """
         messages_saved = (
             original_stats["message_count"] - optimized_stats["message_count"]
@@ -909,10 +821,6 @@ class ConciseMemoryAgent:
     def _read_code_knowledge_base(self) -> Optional[str]:
         """
         Read the implement_code_summary.md file as code knowledge base
-        Returns only the final/latest implementation entry, not all historical entries
-
-        Returns:
-            Content of the latest implementation entry if it exists, None otherwise
         """
         try:
             if os.path.exists(self.code_summary_path):
@@ -929,13 +837,6 @@ class ConciseMemoryAgent:
     def _extract_latest_implementation_entry(self, content: str) -> Optional[str]:
         """
         Extract the latest/final implementation entry from the implement_code_summary.md content
-        Uses a simpler approach to find the last implementation section
-
-        Args:
-            content: Full content of implement_code_summary.md
-
-        Returns:
-            Latest implementation entry content, or None if not found
         """
         try:
             import re
@@ -976,9 +877,6 @@ class ConciseMemoryAgent:
     def _format_tool_results(self) -> str:
         """
         Format current round tool results for LLM input
-
-        Returns:
-            Formatted string of tool results
         """
         if not self.current_round_tool_results:
             return "No tool results in current round."
@@ -1046,12 +944,6 @@ class ConciseMemoryAgent:
     def _format_tool_result_content(self, tool_result: Any) -> str:
         """
         Format tool result content for display
-
-        Args:
-            tool_result: Tool result to format
-
-        Returns:
-            Formatted string representation
         """
         if isinstance(tool_result, str):
             # Try to parse as JSON for better formatting
@@ -1075,10 +967,6 @@ class ConciseMemoryAgent:
     ) -> Dict[str, Any]:
         """
         Get memory agent statistics for multi-file operations
-
-        Args:
-            all_files: List of all files that should be implemented (from workflow)
-            implemented_files: List of all implemented files (from workflow)
         """
         if all_files is None:
             all_files = []
@@ -1118,15 +1006,10 @@ class ConciseMemoryAgent:
     def record_multi_file_implementation(self, file_implementations: Dict[str, str]):
         """
         Record multi-file implementation (for compatibility with workflow)
-        NOTE: This method doesn't track files internally - workflow manages file tracking
-
-        Args:
-            file_implementations: Dictionary mapping file_path to implementation_content
         """
         self.logger.info(
             f"📝 Recorded multi-file implementation batch: {len(file_implementations)} files"
         )
-        # Note: We don't track files internally anymore - workflow handles this
 
     # ===== ENHANCED MEMORY SYNCHRONIZATION METHODS (Phase 4+) =====
 
@@ -1141,17 +1024,6 @@ class ConciseMemoryAgent:
     ) -> str:
         """
         Synchronize memory for a single revised file with diff information
-
-        Args:
-            client: LLM client instance
-            client_type: Type of LLM client ("anthropic" or "openai")
-            revised_file_path: Path of the revised file
-            diff_content: Unified diff showing changes made
-            new_content: Complete new content of the file
-            revision_type: Type of revision ("targeted_fix", "comprehensive_revision", etc.)
-
-        Returns:
-            Updated memory summary for the revised file
         """
         try:
             self.logger.info(
@@ -1203,14 +1075,6 @@ class ConciseMemoryAgent:
     ) -> Dict[str, str]:
         """
         Synchronize memory for multiple revised files based on revision results
-
-        Args:
-            client: LLM client instance
-            client_type: Type of LLM client
-            revision_results: List of revision results with file paths, diffs, and new content
-
-        Returns:
-            Dictionary mapping file paths to updated memory summaries
         """
         try:
             self.logger.info(
@@ -1257,15 +1121,6 @@ class ConciseMemoryAgent:
     ) -> str:
         """
         Create prompt for LLM to generate file revision summary
-
-        Args:
-            file_path: Path of the revised file
-            diff_content: Unified diff showing changes
-            new_content: Complete new content of the file
-            revision_type: Type of revision performed
-
-        Returns:
-            Prompt for LLM revision summarization
         """
         # Truncate content if too long for prompt
         content_preview = (
