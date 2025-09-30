@@ -29,26 +29,7 @@
       "title": "LogPathSettings",
       "type": "object"
     },
-    "AnthropicSettings": {
-      "additionalProperties": true,
-      "description": "Settings for using Anthropic models in the MCP Agent application.",
-      "properties": {
-        "api_key": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Api Key"
-        }
-      },
-      "title": "AnthropicSettings",
-      "type": "object"
-    },
+    
     "CohereSettings": {
       "additionalProperties": true,
       "description": "Settings for using Cohere models in the MCP Agent application.",
@@ -434,48 +415,7 @@
       "title": "MCPSettings",
       "type": "object"
     },
-    "OpenAISettings": {
-      "additionalProperties": true,
-      "description": "Settings for using OpenAI models in the MCP Agent application.",
-      "properties": {
-        "api_key": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Api Key"
-        },
-        "reasoning_effort": {
-          "default": "medium",
-          "enum": [
-            "low",
-            "medium",
-            "high"
-          ],
-          "title": "Reasoning Effort",
-          "type": "string"
-        },
-        "base_url": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Base Url"
-        }
-      },
-      "title": "OpenAISettings",
-      "type": "object"
-    },
+    
     "AzureSettings": {
       "additionalProperties": true,
       "description": "Settings for using Azure models in the MCP Agent application.",
@@ -747,18 +687,7 @@
       "default": null,
       "description": "Settings for Temporal workflow orchestration"
     },
-    "anthropic": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/AnthropicSettings"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Settings for using Anthropic models in the MCP Agent application"
-    },
+    
     "cohere": {
       "anyOf": [
         {
@@ -771,18 +700,7 @@
       "default": null,
       "description": "Settings for using Cohere models in the MCP Agent application"
     },
-    "openai": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/OpenAISettings"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Settings for using OpenAI models in the MCP Agent application"
-    },
+    
     "gemini": {
       "anyOf": [
         {

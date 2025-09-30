@@ -144,7 +144,7 @@ class CodeImplementationAgent:
         Args:
             memory_agent: Memory agent instance
             llm_client: LLM client for summary generation
-            llm_client_type: Type of LLM client ("anthropic" or "openai")
+            llm_client_type: Type of LLM client
         """
         self.memory_agent = memory_agent
         self.llm_client = llm_client

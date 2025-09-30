@@ -579,6 +579,8 @@ def sidebar_control_panel() -> Dict[str, Any]:
         }
 
 
+
+
 def display_processing_history() -> Dict[str, Any]:
     """
     Display processing history

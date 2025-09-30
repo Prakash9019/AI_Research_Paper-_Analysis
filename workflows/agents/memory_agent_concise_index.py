@@ -220,8 +220,8 @@ class ConciseMemoryAgent:
                 stripped_line.endswith("/")
                 and len(line) - len(line.lstrip())
                 <= 4  # Minimal indentation (0-4 spaces)
-                and not any(char in line for char in ["├", "└", "│", "─"])
-            ):  # No tree characters
+                and not any(char in line for char in ["├", "└", "│", "─"]) # No tree characters
+            ):
                 root_directory = stripped_line.rstrip("/")
                 path_stack = [root_directory]
                 continue
@@ -447,7 +447,9 @@ class ConciseMemoryAgent:
         return sorted(cleaned_files)
 
     def record_file_implementation(
-        self, file_path: str, implementation_content: str = ""
+        self,
+        file_path: str,
+        implementation_content: str = "",
     ):
         """
         Record a newly implemented file (simplified version)
@@ -543,7 +545,10 @@ class ConciseMemoryAgent:
             )
 
     def _create_code_summary_prompt(
-        self, file_path: str, implementation_content: str, files_implemented: int
+        self,
+        file_path: str,
+        implementation_content: str,
+        files_implemented: int,
     ) -> str:
         """
         Create prompt for LLM to generate code implementation summary
@@ -555,7 +560,8 @@ class ConciseMemoryAgent:
         implemented_files_list = file_lists["implemented"]
         unimplemented_files_list = file_lists["unimplemented"]
 
-        prompt = f"""You are an expert code implementation summarizer. Analyze the implemented code file and create a structured summary.
+        prompt = f"""
+You are an expert code implementation summarizer. Analyze the implemented code file and create a structured summary.
 
 **🚨 CRITICAL: The files listed below are ALREADY IMPLEMENTED - DO NOT suggest them in Next Steps! 🚨**
 
@@ -690,7 +696,10 @@ class ConciseMemoryAgent:
         return sections
 
     def _format_code_implementation_summary(
-        self, file_path: str, llm_summary: str, files_implemented: int
+        self,
+        file_path: str,
+        llm_summary: str,
+        files_implemented: int,
     ) -> str:
         """
         Format the LLM-generated summary into the final structure
@@ -709,7 +718,10 @@ class ConciseMemoryAgent:
         return formatted_summary
 
     def _create_fallback_code_summary(
-        self, file_path: str, implementation_content: str, files_implemented: int
+        self,
+        file_path: str,
+        implementation_content: str,
+        files_implemented: int,
     ) -> str:
         """
         Create fallback summary when LLM is unavailable
@@ -771,7 +783,10 @@ class ConciseMemoryAgent:
             self.logger.error(f"Failed to save code implementation summary: {e}")
 
     async def _call_llm_for_summary(
-        self, client, client_type: str, summary_messages: List[Dict]
+        self,
+        client,
+        client_type: str,
+        summary_messages: List[Dict],
     ) -> Dict[str, Any]:
         """
         Call LLM for code implementation summary generation ONLY
@@ -824,7 +839,10 @@ class ConciseMemoryAgent:
         self.current_round_tool_results = []  # Clear previous round results
 
     def record_tool_result(
-        self, tool_name: str, tool_input: Dict[str, Any], tool_result: Any
+        self,
+        tool_name: str,
+        tool_input: Dict[str, Any],
+        tool_result: Any,
     ):
         """
         Record tool result for current round and detect write_file calls
@@ -1055,19 +1073,22 @@ class ConciseMemoryAgent:
                 formatted_results.append(f"""
 **read_code_mem Result for {file_path}:**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "read_file":
                 file_path = tool_input.get("file_path", "unknown")
                 formatted_results.append(f"""
 **read_file Result for {file_path}:**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "write_file":
                 file_path = tool_input.get("file_path", "unknown")
                 formatted_results.append(f"""
 **write_file Result for {file_path}:**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "execute_python":
                 code_snippet = (
                     tool_input.get("code", "")[:50] + "..."
@@ -1077,27 +1098,31 @@ class ConciseMemoryAgent:
                 formatted_results.append(f"""
 **execute_python Result (code: {code_snippet}):**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "execute_bash":
                 command = tool_input.get("command", "unknown")
                 formatted_results.append(f"""
 **execute_bash Result (command: {command}):**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "search_code":
                 pattern = tool_input.get("pattern", "unknown")
                 file_pattern = tool_input.get("file_pattern", "")
                 formatted_results.append(f"""
 **search_code Result (pattern: {pattern}, files: {file_pattern}):**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "search_reference_code":
                 target_file = tool_input.get("target_file", "unknown")
                 keywords = tool_input.get("keywords", "")
                 formatted_results.append(f"""
 **search_reference_code Result for {target_file} (keywords: {keywords}):**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
             elif tool_name == "get_file_structure":
                 directory = tool_input.get(
                     "directory_path", tool_input.get("path", "current")
@@ -1105,7 +1130,8 @@ class ConciseMemoryAgent:
                 formatted_results.append(f"""
 **get_file_structure Result for {directory}:**
 {self._format_tool_result_content(tool_result)}
-""")
+"""
+)
 
         return "\n".join(formatted_results)
 
@@ -1231,7 +1257,9 @@ class ConciseMemoryAgent:
         )
 
     def should_trigger_memory_optimization(
-        self, messages: List[Dict[str, Any]], files_implemented: int = 0
+        self,
+        messages: List[Dict[str, Any]],
+        files_implemented: int = 0,
     ) -> bool:
         """
         Check if memory optimization should be triggered
@@ -1252,7 +1280,10 @@ class ConciseMemoryAgent:
         return False
 
     def apply_memory_optimization(
-        self, system_prompt: str, messages: List[Dict[str, Any]], files_implemented: int
+        self,
+        system_prompt: str,
+        messages: List[Dict[str, Any]],
+        files_implemented: int,
     ) -> List[Dict[str, Any]]:
         """
         Apply memory optimization using concise approach

@@ -403,18 +403,17 @@ class CodeIndexer:
                 client, client_type = await self._initialize_llm_client()
 
                 if client_type == "gemini":
-                    # Use the augmented client's specific method for structured output if necessary, 
-                    # otherwise use the general generate_str. Assuming generate_str works with system prompt.
-                    
-                    response = await client.generate_str(
+                    response = await client.chat_with_tools(
                         model=self.default_models["gemini"],
                         system_message=system_prompt,
-                        prompt=prompt,
+                        messages=[{"role": "user", "content": prompt}],
+                        tools=None,  # or supply tool definitions if needed
                         max_tokens=max_tokens,
                         temperature=self.llm_temperature,
                     )
                     
-                    content = response
+                    content = response.get("content", "")  # ✅ Extract the content properly
+
 
                     # Save debug response if enabled
                     if self.save_raw_responses:

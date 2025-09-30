@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced CLI Interface Module for DeepCode
-增强版CLI界面模块 - 专为DeepCode设计
+CLI - DeepCode
 """
 
 import os
@@ -62,64 +62,64 @@ class CLIInterface:
     def print_logo(self):
         """Print enhanced ASCII logo for DeepCode CLI"""
         logo = f"""
-{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║  {Colors.BOLD}{Colors.MAGENTA}██████╗ ███████╗███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗{Colors.CYAN}               ║
-║  {Colors.BOLD}{Colors.PURPLE}██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝{Colors.CYAN}               ║
-║  {Colors.BOLD}{Colors.BLUE}██║  ██║█████╗  █████╗  ██████╔╝██║     ██║   ██║██║  ██║█████╗  {Colors.CYAN}               ║
-║  {Colors.BOLD}{Colors.OKBLUE}██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██║     ██║   ██║██║  ██║██╔══╝  {Colors.CYAN}               ║
-║  {Colors.BOLD}{Colors.OKCYAN}██████╔╝███████╗███████╗██║     ╚██████╗╚██████╔╝██████╔╝███████╗{Colors.CYAN}               ║
-║  {Colors.BOLD}{Colors.GREEN}╚═════╝ ╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝{Colors.CYAN}               ║
-║                                                                               ║
-║  {Colors.BOLD}{Colors.GREEN}🧬 OPEN-SOURCE CODE AGENT • DATA INTELLIGENCE LAB @ HKU 🚀           {Colors.CYAN}║
-║  {Colors.BOLD}{Colors.GREEN}⚡ REVOLUTIONIZING RESEARCH REPRODUCIBILITY ⚡                      {Colors.CYAN}║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.CYAN}===============================================================================
+|                                                                               |
+|  {Colors.BOLD}{Colors.MAGENTA}                             {Colors.CYAN}               |
+|  {Colors.BOLD}{Colors.PURPLE}                                {Colors.CYAN}               |
+|  {Colors.BOLD}{Colors.BLUE}                                  {Colors.CYAN}               |
+|  {Colors.BOLD}{Colors.OKBLUE}                                {Colors.CYAN}               |
+|  {Colors.BOLD}{Colors.OKCYAN}                             {Colors.CYAN}               |
+|  {Colors.BOLD}{Colors.GREEN}                                 {Colors.CYAN}               |
+|                                                                               |
+|  {Colors.BOLD}{Colors.GREEN} OPEN-SOURCE CODE AGENT  DATA INTELLIGENCE LAB @ HKU            {Colors.CYAN}|
+|  {Colors.BOLD}{Colors.GREEN} REVOLUTIONIZING RESEARCH REPRODUCIBILITY                       {Colors.CYAN}|
+|                                                                               |
+==============================================================================={Colors.ENDC}
 """
         print(logo)
 
     def print_welcome_banner(self):
         """Print enhanced welcome banner"""
         banner = f"""
-{Colors.BOLD}{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                             WELCOME TO DEEPCODE CLI                          ║
-╠═══════════════════════════════════════════════════════════════════════════════╣
-║  {Colors.YELLOW}Open-Source Code Agent | Data Intelligence Lab @ HKU | MIT License        {Colors.CYAN}║
-║  {Colors.GREEN}Status: Ready | Engine: Multi-Agent Architecture Initialized               {Colors.CYAN}║
-║  {Colors.PURPLE}Mission: Revolutionizing Research Reproducibility                         {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.BOLD}{Colors.OKCYAN}💎 CORE CAPABILITIES:{Colors.ENDC}                                                      {Colors.CYAN}║
-║    {Colors.BOLD}{Colors.OKCYAN}▶ Automated Paper-to-Code Reproduction                                {Colors.CYAN}║
-║    {Colors.BOLD}{Colors.OKCYAN}▶ Collaborative Multi-Agent Architecture                             {Colors.CYAN}║
-║    {Colors.BOLD}{Colors.OKCYAN}▶ Intelligent Code Implementation & Validation                       {Colors.CYAN}║
-║    {Colors.BOLD}{Colors.OKCYAN}▶ Future Vision: One Sentence → Complete Codebase                   {Colors.CYAN}║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.BOLD}{Colors.CYAN}===============================================================================
+|                             WELCOME TO DEEPCODE CLI                          |
+|===============================================================================|
+|  {Colors.YELLOW}Open-Source Code Agent | Data Intelligence Lab @ HKU | MIT License        {Colors.CYAN}|
+|  {Colors.GREEN}Status: Ready | Engine: Multi-Agent Architecture Initialized               {Colors.CYAN}|
+|  {Colors.PURPLE}Mission: Revolutionizing Research Reproducibility                         {Colors.CYAN}|
+|                                                                               |
+|  {Colors.BOLD}{Colors.OKCYAN} CORE CAPABILITIES:{Colors.ENDC}                                                      {Colors.CYAN}|
+|    {Colors.BOLD}{Colors.OKCYAN}> Automated Paper-to-Code Reproduction                                {Colors.CYAN}|
+|    {Colors.BOLD}{Colors.OKCYAN}> Collaborative Multi-Agent Architecture                             {Colors.CYAN}|
+|    {Colors.BOLD}{Colors.OKCYAN}> Intelligent Code Implementation & Validation                       {Colors.CYAN}|
+|    {Colors.BOLD}{Colors.OKCYAN}> Future Vision: One Sentence  Complete Codebase                   {Colors.CYAN}|
+==============================================================================={Colors.ENDC}
 """
         print(banner)
 
-    def print_separator(self, char="═", length=79, color=Colors.CYAN):
+    def print_separator(self, char="=", length=79, color=Colors.CYAN):
         """Print a styled separator line"""
-        print(f"{color}{char * length}{Colors.ENDC}")
+        print(f"{color}{{char * length}}{Colors.ENDC}")
 
     def print_status(self, message: str, status_type: str = "info"):
         """Print status message with appropriate styling"""
         status_styles = {
-            "success": f"{Colors.OKGREEN}✅",
-            "error": f"{Colors.FAIL}❌",
-            "warning": f"{Colors.WARNING}⚠️ ",
-            "info": f"{Colors.OKBLUE}ℹ️ ",
-            "processing": f"{Colors.YELLOW}⏳",
-            "upload": f"{Colors.PURPLE}📁",
-            "download": f"{Colors.CYAN}📥",
-            "analysis": f"{Colors.MAGENTA}🔍",
-            "implementation": f"{Colors.GREEN}⚙️ ",
-            "complete": f"{Colors.OKGREEN}🎉",
+            "success": f"{Colors.OKGREEN}",
+            "error": f"{Colors.FAIL}",
+            "warning": f"{Colors.WARNING}",
+            "info": f"{Colors.OKBLUE}",
+            "processing": f"{Colors.YELLOW}",
+            "upload": f"{Colors.PURPLE}",
+            "download": f"{Colors.CYAN}",
+            "analysis": f"{Colors.MAGENTA}",
+            "implementation": f"{Colors.GREEN}",
+            "complete": f"{Colors.OKGREEN}",
         }
 
         icon = status_styles.get(status_type, status_styles["info"])
         timestamp = time.strftime("%H:%M:%S")
         print(
-            f"[{Colors.BOLD}{timestamp}{Colors.ENDC}] {icon} {Colors.BOLD}{message}{Colors.ENDC}"
+            f"[{{Colors.BOLD}}{{timestamp}}{{Colors.ENDC}}] {{icon}} {{Colors.BOLD}}{{message}}{{Colors.ENDC}}"
         )
 
     def create_menu(self):
@@ -132,38 +132,38 @@ class CLIInterface:
         )
 
         menu = f"""
-{Colors.BOLD}{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                MAIN MENU                                      ║
-╠═══════════════════════════════════════════════════════════════════════════════╣
-║  {Colors.OKGREEN}🌐 [U] Process URL       {Colors.CYAN}│  {Colors.PURPLE}📁 [F] Upload File    {Colors.CYAN}│  {Colors.MAGENTA}💬 [T] Chat Input{Colors.CYAN}    ║
-║  {Colors.OKCYAN}⚙️  [C] Configure        {Colors.CYAN}│  {Colors.YELLOW}📊 [H] History        {Colors.CYAN}│  {Colors.FAIL}❌ [Q] Quit{Colors.CYAN}         ║
-║                                                                               ║
-║  {Colors.BOLD}🤖 Current Pipeline Mode: {pipeline_mode}{Colors.CYAN}                          ║
-║  {Colors.BOLD}🗂️  Codebase Indexing: {index_status}{Colors.CYAN}                                    ║
-║  {Colors.BOLD}📄 Document Processing: {segmentation_mode}{Colors.CYAN}                               ║
-║                                                                               ║
-║  {Colors.YELLOW}📝 URL Processing:{Colors.CYAN}                                                         ║
-║  {Colors.YELLOW}   ▶ Enter research paper URL (arXiv, IEEE, ACM, etc.)                    {Colors.CYAN}║
-║  {Colors.YELLOW}   ▶ Supports direct PDF links and academic paper pages                   {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.PURPLE}📁 File Processing:{Colors.CYAN}                                                        ║
-║  {Colors.PURPLE}   ▶ Upload PDF, DOCX, PPTX, HTML, or TXT files                          {Colors.CYAN}║
-║  {Colors.PURPLE}   ▶ Intelligent file format detection and processing                     {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.MAGENTA}💬 Chat Input:{Colors.CYAN}                                                           ║
-║  {Colors.MAGENTA}   ▶ Describe your coding requirements in natural language                {Colors.CYAN}║
-║  {Colors.MAGENTA}   ▶ AI generates implementation plan and code automatically             {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.OKCYAN}🔄 Processing Pipeline:{Colors.CYAN}                                                    ║
-║  {Colors.OKCYAN}   ▶ Intelligent agent orchestration → Code synthesis                     {Colors.CYAN}║
-║  {Colors.OKCYAN}   ▶ Multi-agent coordination with progress tracking                     {Colors.CYAN}║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.BOLD}{Colors.CYAN}===============================================================================
+|                                MAIN MENU                                      |
+|===============================================================================|
+|  {Colors.OKGREEN} [U] Process URL       {Colors.CYAN}|  {Colors.PURPLE} [F] Upload File    {Colors.CYAN}|  {Colors.MAGENTA} [T] Chat Input{Colors.CYAN}    |
+|  {Colors.OKCYAN}  [C] Configure        {Colors.CYAN}|  {Colors.YELLOW} [H] History        {Colors.CYAN}|  {Colors.FAIL} [Q] Quit{Colors.CYAN}         |
+|                                                                               |
+|  {Colors.BOLD} Current Pipeline Mode: {pipeline_mode}{Colors.CYAN}                          |
+|  {Colors.BOLD}  Codebase Indexing: {index_status}{Colors.CYAN}                                    |
+|  {Colors.BOLD} Document Processing: {segmentation_mode}{Colors.CYAN}                               |
+|                                                                               |
+|  {Colors.YELLOW} URL Processing:{Colors.CYAN}                                                         |
+|  {Colors.YELLOW}   > Enter research paper URL (arXiv, IEEE, ACM, etc.)                    {Colors.CYAN}|
+|  {Colors.YELLOW}   > Supports direct PDF links and academic paper pages                   {Colors.CYAN}|
+|                                                                               |
+|  {Colors.PURPLE} File Processing:{Colors.CYAN}                                                        |
+|  {Colors.PURPLE}   > Upload PDF, DOCX, PPTX, HTML, or TXT files                          {Colors.CYAN}|
+|  {Colors.PURPLE}   > Intelligent file format detection and processing                     {Colors.CYAN}|
+|                                                                               |
+|  {Colors.MAGENTA} Chat Input:{Colors.CYAN}                                                           |
+|  {Colors.MAGENTA}   > Describe your coding requirements in natural language                {Colors.CYAN}|
+|  {Colors.MAGENTA}   > AI generates implementation plan and code automatically             {Colors.CYAN}|
+|                                                                               |
+|  {Colors.OKCYAN} Processing Pipeline:{Colors.CYAN}                                                    |
+|  {Colors.OKCYAN}   > Intelligent agent orchestration  Code synthesis                     {Colors.CYAN}|
+|  {Colors.OKCYAN}   > Multi-agent coordination with progress tracking                     {Colors.CYAN}|
+==============================================================================={Colors.ENDC}
 """
         print(menu)
 
     def get_user_input(self):
         """Get user input with styled prompt"""
-        print(f"\n{Colors.BOLD}{Colors.OKCYAN}➤ Your choice: {Colors.ENDC}", end="")
+        print(f"\n{{Colors.BOLD}}{{Colors.OKCYAN}}> Your choice: {{Colors.ENDC}}", end="")
         return input().strip().lower()
 
     def upload_file_gui(self) -> Optional[str]:
@@ -231,18 +231,18 @@ class CLIInterface:
 
     def _get_manual_file_path(self) -> Optional[str]:
         """Get file path through manual input with validation"""
-        self.print_separator("─", 79, Colors.YELLOW)
-        print(f"{Colors.BOLD}{Colors.YELLOW}📁 Manual File Path Input{Colors.ENDC}")
+        self.print_separator("-", 79, Colors.YELLOW)
+        print(f"{Colors.BOLD}{Colors.YELLOW} Manual File Path Input{Colors.ENDC}")
         print(
             f"{Colors.CYAN}Please enter the full path to your research paper file:{Colors.ENDC}"
         )
         print(
             f"{Colors.CYAN}Supported formats: PDF, DOCX, PPTX, HTML, TXT, MD{Colors.ENDC}"
         )
-        self.print_separator("─", 79, Colors.YELLOW)
+        self.print_separator("-", 79, Colors.YELLOW)
 
         while True:
-            print(f"\n{Colors.BOLD}{Colors.OKCYAN}📂 File path: {Colors.ENDC}", end="")
+            print(f"\n{Colors.BOLD}{Colors.OKCYAN} File path: {Colors.ENDC}", end="")
             file_path = input().strip()
 
             if not file_path:
@@ -300,24 +300,24 @@ class CLIInterface:
 
     def get_url_input(self) -> str:
         """Enhanced URL input with validation"""
-        self.print_separator("─", 79, Colors.GREEN)
-        print(f"{Colors.BOLD}{Colors.GREEN}🌐 URL Input Interface{Colors.ENDC}")
+        self.print_separator("-", 79, Colors.GREEN)
+        print(f"{Colors.BOLD}{Colors.GREEN} URL Input Interface{Colors.ENDC}")
         print(
             f"{Colors.CYAN}Enter a research paper URL from supported platforms:{Colors.ENDC}"
         )
         print(
-            f"{Colors.CYAN}• arXiv (arxiv.org)        • IEEE Xplore (ieeexplore.ieee.org){Colors.ENDC}"
+            f"{Colors.CYAN} arXiv (arxiv.org)         IEEE Xplore (ieeexplore.ieee.org){Colors.ENDC}"
         )
         print(
-            f"{Colors.CYAN}• ACM Digital Library      • SpringerLink • Nature • Science{Colors.ENDC}"
+            f"{Colors.CYAN} ACM Digital Library       SpringerLink  Nature  Science{Colors.ENDC}"
         )
         print(
-            f"{Colors.CYAN}• Direct PDF links         • Academic publisher websites{Colors.ENDC}"
+            f"{Colors.CYAN} Direct PDF links          Academic publisher websites{Colors.ENDC}"
         )
-        self.print_separator("─", 79, Colors.GREEN)
+        self.print_separator("-", 79, Colors.GREEN)
 
         while True:
-            print(f"\n{Colors.BOLD}{Colors.OKCYAN}🔗 URL: {Colors.ENDC}", end="")
+            print(f"\n{Colors.BOLD}{Colors.OKCYAN} URL: {Colors.ENDC}", end="")
             url = input().strip()
 
             if not url:
@@ -368,39 +368,39 @@ class CLIInterface:
 
     def get_chat_input(self) -> str:
         """Enhanced chat input interface for coding requirements"""
-        self.print_separator("─", 79, Colors.PURPLE)
-        print(f"{Colors.BOLD}{Colors.PURPLE}💬 Chat Input Interface{Colors.ENDC}")
+        self.print_separator("-", 79, Colors.PURPLE)
+        print(f"{Colors.BOLD}{Colors.PURPLE} Chat Input Interface{Colors.ENDC}")
         print(
             f"{Colors.CYAN}Describe your coding requirements in natural language.{Colors.ENDC}"
         )
         print(
             f"{Colors.CYAN}Our AI will analyze your needs and generate a comprehensive implementation plan.{Colors.ENDC}"
         )
-        self.print_separator("─", 79, Colors.PURPLE)
+        self.print_separator("-", 79, Colors.PURPLE)
 
         # Display examples to help users
-        print(f"\n{Colors.BOLD}{Colors.YELLOW}💡 Examples:{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{Colors.YELLOW} Examples:{Colors.ENDC}")
         print(f"{Colors.CYAN}Academic Research:{Colors.ENDC}")
         print(
-            "  • 'I need to implement a reinforcement learning algorithm for robotic control'"
+            "   'I need to implement a reinforcement learning algorithm for robotic control'"
         )
         print(
-            "  • 'Create a neural network for image classification with attention mechanisms'"
+            "   'Create a neural network for image classification with attention mechanisms'"
         )
         print(f"{Colors.CYAN}Engineering Projects:{Colors.ENDC}")
         print(
-            "  • 'Develop a web application for project management with user authentication'"
+            "   'Develop a web application for project management with user authentication'"
         )
-        print("  • 'Create a data visualization dashboard for sales analytics'")
+        print("   'Create a data visualization dashboard for sales analytics'")
         print(f"{Colors.CYAN}Mixed Projects:{Colors.ENDC}")
         print(
-            "  • 'Implement a machine learning model with a web interface for real-time predictions'"
+            "   'Implement a machine learning model with a web interface for real-time predictions'"
         )
 
-        self.print_separator("─", 79, Colors.PURPLE)
+        self.print_separator("-", 79, Colors.PURPLE)
 
         print(
-            f"\n{Colors.BOLD}{Colors.OKCYAN}✏️  Enter your coding requirements below:{Colors.ENDC}"
+            f"\n{Colors.BOLD}{Colors.OKCYAN}  Enter your coding requirements below:{Colors.ENDC}"
         )
         print(
             f"{Colors.YELLOW}(Type your description, press Enter twice when finished, or Ctrl+C to cancel){Colors.ENDC}"
@@ -455,13 +455,13 @@ class CLIInterface:
         word_count = len(user_input.split())
         char_count = len(user_input)
 
-        print(f"\n{Colors.BOLD}{Colors.GREEN}📋 Input Summary:{Colors.ENDC}")
-        print(f"  • {Colors.CYAN}Word count: {word_count}{Colors.ENDC}")
-        print(f"  • {Colors.CYAN}Character count: {char_count}{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{Colors.GREEN} Input Summary:{Colors.ENDC}")
+        print(f"   {Colors.CYAN}Word count: {word_count}{Colors.ENDC}")
+        print(f"   {Colors.CYAN}Character count: {char_count}{Colors.ENDC}")
 
         # Show preview
         preview = user_input[:200] + "..." if len(user_input) > 200 else user_input
-        print(f"\n{Colors.BOLD}{Colors.CYAN}📄 Preview:{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{Colors.CYAN} Preview:{Colors.ENDC}")
         print(f"{Colors.YELLOW}{preview}{Colors.ENDC}")
 
         # Confirm with user
@@ -490,22 +490,22 @@ class CLIInterface:
 
     def show_progress_bar(self, message: str, duration: float = 2.0):
         """Show animated progress bar"""
-        print(f"\n{Colors.BOLD}{Colors.CYAN}{message}{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{Colors.CYAN}{{message}}{Colors.ENDC}")
 
         bar_length = 50
         for i in range(bar_length + 1):
             percent = (i / bar_length) * 100
-            filled = "█" * i
-            empty = "░" * (bar_length - i)
+            filled = "=" * i
+            empty = " " * (bar_length - i)
 
             print(
-                f"\r{Colors.OKGREEN}[{filled}{empty}] {percent:3.0f}%{Colors.ENDC}",
+                f"\r{Colors.OKGREEN}[{{filled}}{{empty}}] {{percent:3.0f}}%{Colors.ENDC}",
                 end="",
                 flush=True,
             )
             time.sleep(duration / bar_length)
 
-        print(f"\n{Colors.OKGREEN}✓ {message} completed{Colors.ENDC}")
+        print(f"\n{Colors.OKGREEN} {{message}} completed{Colors.ENDC}")
 
     def show_spinner(self, message: str, duration: float = 1.0):
         """Show spinner animation"""
@@ -513,13 +513,13 @@ class CLIInterface:
         end_time = time.time() + duration
 
         print(
-            f"{Colors.BOLD}{Colors.CYAN}{message}... {Colors.ENDC}", end="", flush=True
+            f"{Colors.BOLD}{Colors.CYAN}{{message}}... {Colors.ENDC}", end="", flush=True
         )
 
         i = 0
         while time.time() < end_time:
             print(
-                f"\r{Colors.BOLD}{Colors.CYAN}{message}... {Colors.YELLOW}{spinner_chars[i % len(spinner_chars)]}{Colors.ENDC}",
+                f"\r{Colors.BOLD}{Colors.CYAN}{{message}}... {Colors.YELLOW}{{spinner_chars[i % len(spinner_chars)]}}{Colors.ENDC}",
                 end="",
                 flush=True,
             )
@@ -527,7 +527,7 @@ class CLIInterface:
             i += 1
 
         print(
-            f"\r{Colors.BOLD}{Colors.CYAN}{message}... {Colors.OKGREEN}✓{Colors.ENDC}"
+            f"\r{Colors.BOLD}{Colors.CYAN}{{message}}... {Colors.OKGREEN}"
         )
 
     def display_processing_stages(
@@ -540,72 +540,72 @@ class CLIInterface:
         if chat_mode:
             # Chat mode - simplified workflow for user requirements
             stages = [
-                ("🚀", "Initialize", "Setting up chat engine"),
-                ("💬", "Planning", "Analyzing requirements"),
-                ("🏗️", "Setup", "Creating workspace"),
-                ("📝", "Save Plan", "Saving implementation plan"),
-                ("⚙️", "Implement", "Generating code"),
+                ("", "Initialize", "Setting up chat engine"),
+                ("", "Planning", "Analyzing requirements"),
+                ("", "Setup", "Creating workspace"),
+                ("", "Save Plan", "Saving implementation plan"),
+                ("", "Implement", "Generating code"),
             ]
             pipeline_mode = "CHAT PLANNING"
         elif enable_indexing:
             # Full pipeline with all stages
             stages = [
-                ("🚀", "Initialize", "Setting up AI engine"),
-                ("📊", "Analyze", "Analyzing research content"),
-                ("📥", "Download", "Processing document"),
-                ("📋", "Plan", "Generating code architecture"),
-                ("🔍", "References", "Analyzing references"),
-                ("📦", "Repos", "Downloading repositories"),
-                ("🗂️", "Index", "Building code index"),
-                ("⚙️", "Implement", "Implementing code"),
+                ("", "Initialize", "Setting up AI engine"),
+                ("", "Analyze", "Analyzing research content"),
+                ("", "Download", "Processing document"),
+                ("", "Plan", "Generating code architecture"),
+                ("", "References", "Analyzing references"),
+                ("", "Repos", "Downloading repositories"),
+                ("", "Index", "Building code index"),
+                ("", "Implement", "Implementing code"),
             ]
             pipeline_mode = "COMPREHENSIVE"
         else:
             # Fast mode - skip indexing related stages
             stages = [
-                ("🚀", "Initialize", "Setting up AI engine"),
-                ("📊", "Analyze", "Analyzing research content"),
-                ("📥", "Download", "Processing document"),
-                ("📋", "Plan", "Generating code architecture"),
-                ("⚙️", "Implement", "Implementing code"),
+                ("", "Initialize", "Setting up AI engine"),
+                ("", "Analyze", "Analyzing research content"),
+                ("", "Download", "Processing document"),
+                ("", "Plan", "Generating code architecture"),
+                ("", "Implement", "Implementing code"),
             ]
             pipeline_mode = "OPTIMIZED"
 
         print(
-            f"\n{Colors.BOLD}{Colors.CYAN}📋 {pipeline_mode} PIPELINE STATUS{Colors.ENDC}"
+            f"\n{Colors.BOLD}{Colors.CYAN} {pipeline_mode} PIPELINE STATUS{Colors.ENDC}"
         )
-        self.print_separator("─", 79, Colors.CYAN)
+        self.print_separator("-", 79, Colors.CYAN)
 
         for i, (icon, name, desc) in enumerate(stages):
             if i < current_stage:
-                status = f"{Colors.OKGREEN}✓ COMPLETED{Colors.ENDC}"
+                status = f"{Colors.OKGREEN} COMPLETED{Colors.ENDC}"
             elif i == current_stage:
-                status = f"{Colors.YELLOW}⏳ IN PROGRESS{Colors.ENDC}"
+                status = f"{Colors.YELLOW} IN PROGRESS{Colors.ENDC}"
             else:
-                status = f"{Colors.CYAN}⏸️  PENDING{Colors.ENDC}"
+                status = f"{Colors.CYAN}  PENDING{Colors.ENDC}"
 
             print(
-                f"{icon} {Colors.BOLD}{name:<12}{Colors.ENDC} │ {desc:<25} │ {status}"
+                f"{{icon}} {Colors.BOLD}{{name:<12}}{Colors.ENDC} | {desc:<25} | {status}"
             )
 
-        self.print_separator("─", 79, Colors.CYAN)
+        self.print_separator("-", 79, Colors.CYAN)
 
     def print_results_header(self):
         """Print results section header"""
         header = f"""
-{Colors.BOLD}{Colors.OKGREEN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                              PROCESSING RESULTS                              ║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.BOLD}{Colors.OKGREEN}===============================================================================
+|                              PROCESSING RESULTS                              |
+==============================================================================={Colors.ENDC}
 """
         print(header)
 
     def print_error_box(self, title: str, error_msg: str):
         """Print formatted error box"""
         print(
-            f"\n{Colors.FAIL}╔══════════════════════════════════════════════════════════════╗"
+            f"\n{Colors.FAIL}===================================================================="
         )
-        print(f"║ {Colors.BOLD}ERROR: {title:<50}{Colors.FAIL} ║")
-        print("╠══════════════════════════════════════════════════════════════╣")
+        print(f"| {Colors.BOLD}ERROR: {title:<50}{Colors.FAIL} |")
+        print("|====================================================================|")
 
         words = error_msg.split()
         lines = []
@@ -621,49 +621,49 @@ class CLIInterface:
             lines.append(current_line.strip())
 
         for line in lines:
-            print(f"║ {line:<56} ║")
+            print(f"| {line:<56} |")
 
         print(
-            f"╚══════════════════════════════════════════════════════════════╝{Colors.ENDC}"
+            f"======================================================================{Colors.ENDC}"
         )
 
     def cleanup_cache(self):
-        """清理Python缓存文件 / Clean up Python cache files"""
+        """Python / Clean up Python cache files"""
         try:
             self.print_status("Cleaning up cache files...", "info")
-            # 清理__pycache__目录
+            # __pycache__
             os.system('find . -type d -name "__pycache__" -exec rm -r {} + 2>/dev/null')
-            # 清理.pyc文件
+            # .pyc
             os.system('find . -name "*.pyc" -delete 2>/dev/null')
             self.print_status("Cache cleanup completed", "success")
         except Exception as e:
-            self.print_status(f"Cache cleanup failed: {e}", "warning")
+            self.print_status(f"Cache cleanup failed: {{e}}", "warning")
 
     def print_goodbye(self):
         """Print goodbye message"""
-        # 清理缓存文件
+        # 
         self.cleanup_cache()
 
         goodbye = f"""
-{Colors.BOLD}{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                GOODBYE                                        ║
-╠═══════════════════════════════════════════════════════════════════════════════╣
-║  {Colors.OKGREEN}🎉 Thank you for using DeepCode CLI!                                     {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.YELLOW}🧬 Join our community in revolutionizing research reproducibility         {Colors.CYAN}║
-║  {Colors.PURPLE}⚡ Together, we're building the future of automated code generation       {Colors.CYAN}║
-║                                                                               ║
-║  {Colors.OKCYAN}💡 Questions? Contribute to our open-source mission at GitHub             {Colors.CYAN}║
-║  {Colors.GREEN}🧹 Cache files cleaned up for optimal performance                         {Colors.CYAN}║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.BOLD}{Colors.CYAN}===============================================================================
+|                                GOODBYE                                        |
+|===============================================================================|
+|  {Colors.OKGREEN}Thank you for using DeepCode CLI!                                     {Colors.CYAN}|
+|                                                                               |
+|  {Colors.YELLOW}Join our community in revolutionizing research reproducibility         {Colors.CYAN}|
+|  {Colors.PURPLE}Together, we're building the future of automated code generation       {Colors.CYAN}|
+|                                                                               |
+|  {Colors.OKCYAN}Questions? Contribute to our open-source mission at GitHub             {Colors.CYAN}|
+|  {Colors.GREEN}Cache files cleaned up for optimal performance                         {Colors.CYAN}|
+|                                                                               |
+==============================================================================={Colors.ENDC}
 """
         print(goodbye)
 
     def ask_continue(self) -> bool:
         """Ask if user wants to continue with another paper"""
-        self.print_separator("─", 79, Colors.YELLOW)
-        print(f"\n{Colors.BOLD}{Colors.YELLOW}🔄 Process another paper?{Colors.ENDC}")
+        self.print_separator("-", 79, Colors.YELLOW)
+        print(f"\n{Colors.BOLD}{Colors.YELLOW}Process another paper?{Colors.ENDC}")
         choice = input(f"{Colors.OKCYAN}Continue? (y/n): {Colors.ENDC}").strip().lower()
         return choice in ["y", "yes", "1", "true"]
 
@@ -683,18 +683,18 @@ class CLIInterface:
             self.print_status("No processing history available", "info")
             return
 
-        print(f"\n{Colors.BOLD}{Colors.CYAN}📚 PROCESSING HISTORY{Colors.ENDC}")
-        self.print_separator("─", 79, Colors.CYAN)
+        print(f"\n{Colors.BOLD}{Colors.CYAN}PROCESSING HISTORY{Colors.ENDC}")
+        self.print_separator("-", 79, Colors.CYAN)
 
         for i, entry in enumerate(self.processing_history, 1):
-            status_icon = "✅" if entry["status"] == "success" else "❌"
+            status_icon = "" if entry["status"] == "success" else ""
             source = entry["input_source"]
             if len(source) > 50:
                 source = source[:47] + "..."
 
             print(f"{i}. {status_icon} {entry['timestamp']} | {source}")
 
-        self.print_separator("─", 79, Colors.CYAN)
+        self.print_separator("-", 79, Colors.CYAN)
 
     def show_configuration_menu(self):
         """Show configuration options menu"""
@@ -705,58 +705,58 @@ class CLIInterface:
         segmentation_threshold = getattr(self, "segmentation_threshold", 50000)
 
         print(f"""
-{Colors.BOLD}{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════════════╗
-║                           CONFIGURATION MENU                                  ║
-╠═══════════════════════════════════════════════════════════════════════════════╣
-║                                                                               ║
-║  {Colors.BOLD}🤖 Agent Orchestration Engine Configuration{Colors.CYAN}                             ║
-║                                                                               ║
-║  {Colors.OKCYAN}[1] Pipeline Mode:{Colors.CYAN}                                                        ║
-║      {Colors.BOLD}🧠 Comprehensive Mode{Colors.CYAN} - Full intelligence analysis (Default)         ║
-║         ✓ Research Analysis + Resource Processing                            ║
-║         ✓ Reference Intelligence Discovery                                   ║
-║         ✓ Automated Repository Acquisition                                   ║
-║         ✓ Codebase Intelligence Orchestration                               ║
-║         ✓ Intelligent Code Implementation Synthesis                         ║
-║                                                                               ║
-║      {Colors.BOLD}⚡ Optimized Mode{Colors.CYAN} - Fast processing (Skip indexing)                    ║
-║         ✓ Research Analysis + Resource Processing                            ║
-║         ✓ Code Architecture Synthesis                                        ║
-║         ✓ Intelligent Code Implementation Synthesis                         ║
-║         ✗ Reference Intelligence Discovery (Skipped)                        ║
-║         ✗ Repository Acquisition (Skipped)                                   ║
-║         ✗ Codebase Intelligence Orchestration (Skipped)                     ║
-║                                                                               ║
-║  {Colors.OKCYAN}[2] Document Processing:{Colors.CYAN}                                                   ║
-║      {Colors.BOLD}📄 Smart Segmentation{Colors.CYAN} - Intelligent document analysis (Default)      ║
-║         ✓ Semantic boundary detection                                        ║
-║         ✓ Algorithm integrity preservation                                   ║
-║         ✓ Formula chain recognition                                          ║
-║         ✓ Adaptive character limits                                          ║
-║                                                                               ║
-║      {Colors.BOLD}📋 Traditional Processing{Colors.CYAN} - Full document reading                       ║
-║         ✓ Complete document analysis                                         ║
-║         ✗ Smart segmentation (Disabled)                                      ║
-║                                                                               ║
-║  {Colors.YELLOW}Current Settings:{Colors.CYAN}                                                         ║
-║    Pipeline: {'🧠 Comprehensive Mode' if self.enable_indexing else '⚡ Optimized Mode'}                                          ║
-║    Document: {'📄 Smart Segmentation' if segmentation_enabled else '📋 Traditional Processing'}                                ║
-║    Threshold: {segmentation_threshold} characters                                    ║
-║                                                                               ║
-║  {Colors.OKGREEN}[T] Toggle Pipeline    {Colors.BLUE}[S] Toggle Segmentation    {Colors.FAIL}[B] Back{Colors.CYAN}     ║
-╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.BOLD}{Colors.CYAN}===============================================================================
+|                           CONFIGURATION MENU                                  |
+|===============================================================================|
+|                                                                               |
+|  {Colors.BOLD}Agent Orchestration Engine Configuration{Colors.CYAN}                         |
+|                                                                               |
+|  {Colors.OKCYAN}[1] Pipeline Mode:{Colors.CYAN}                                                |
+|      {Colors.BOLD}Comprehensive Mode{Colors.CYAN} - Full intelligence analysis (Default)     |
+|         - Research Analysis + Resource Processing                             |
+|         - Reference Intelligence Discovery                                    |
+|         - Automated Repository Acquisition                                    |
+|         - Codebase Intelligence Orchestration                                 |
+|         - Intelligent Code Implementation Synthesis                           |
+|                                                                               |
+|      {Colors.BOLD}Optimized Mode{Colors.CYAN} - Fast processing (Skip indexing)                |
+|         - Research Analysis + Resource Processing                             |
+|         - Code Architecture Synthesis                                         |
+|         - Intelligent Code Implementation Synthesis                           |
+|         - Reference Intelligence Discovery (Skipped)                          |
+|         - Repository Acquisition (Skipped)                                    |
+|         - Codebase Intelligence Orchestration (Skipped)                       |
+|                                                                               |
+|  {Colors.OKCYAN}[2] Document Processing:{Colors.CYAN}                                       |
+|      {Colors.BOLD}Smart Segmentation{Colors.CYAN} - Intelligent document analysis (Default)  |
+|         - Semantic boundary detection                                         |
+|         - Algorithm integrity preservation                                    |
+|         - Formula chain recognition                                           |
+|         - Adaptive character limits                                           |
+|                                                                               |
+|      {Colors.BOLD}Traditional Processing{Colors.CYAN} - Full document reading                  |
+|         - Complete document analysis                                          |
+|         - Smart segmentation (Disabled)                                       |
+|                                                                               |
+|  {Colors.YELLOW}Current Settings:{Colors.CYAN}                                                 |
+|    Pipeline: {{'Comprehensive Mode' if self.enable_indexing else 'Optimized Mode'}}              |
+|    Document: {{'Smart Segmentation' if segmentation_enabled else 'Traditional Processing'}}       |
+|    Threshold: {{segmentation_threshold}} characters                             |
+|                                                                               |
+|  {Colors.OKGREEN}[T] Toggle Pipeline    {Colors.BLUE}[S] Toggle Segmentation    {Colors.FAIL}[B] Back{Colors.CYAN}     |
+==============================================================================={Colors.ENDC}
 """)
 
         while True:
             print(
-                f"\n{Colors.BOLD}{Colors.OKCYAN}➤ Configuration choice: {Colors.ENDC}",
+                f"\n{Colors.BOLD}{Colors.OKCYAN}> Configuration choice: {Colors.ENDC}",
                 end="",
             )
             choice = input().strip().lower()
 
             if choice in ["t", "toggle"]:
                 self.enable_indexing = not self.enable_indexing
-                mode = "🧠 Comprehensive" if self.enable_indexing else "⚡ Optimized"
+                mode = "Comprehensive" if self.enable_indexing else "Optimized"
                 self.print_status(f"Pipeline mode switched to: {mode}", "success")
                 time.sleep(1)
                 self.show_configuration_menu()
@@ -765,11 +765,7 @@ class CLIInterface:
             elif choice in ["s", "segmentation"]:
                 current_state = getattr(self, "segmentation_enabled", True)
                 self.segmentation_enabled = not current_state
-                seg_mode = (
-                    "📄 Smart Segmentation"
-                    if self.segmentation_enabled
-                    else "📋 Traditional Processing"
-                )
+                seg_mode = "Smart Segmentation" if self.segmentation_enabled else "Traditional Processing"
                 self.print_status(
                     f"Document processing switched to: {seg_mode}", "success"
                 )

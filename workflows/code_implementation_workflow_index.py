@@ -1,3 +1,4 @@
+
 """
 Paper Code Implementation Workflow - MCP-compliant Iterative Development
 
@@ -34,12 +35,9 @@ from workflows.agents import CodeImplementationAgent
 from workflows.agents.memory_agent_concise import ConciseMemoryAgent
 from config.mcp_tool_definitions_index import get_mcp_tools
 from utils.llm_utils import get_preferred_llm_class, get_default_models
-# DialogueLogger removed - no longer needed
 
 # Import necessary LLM classes
 from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
-# Removed: from mcp_agent.workflows.llm.augmented_llm_anthropic import AnthropicAugmentedLLM
-# Removed: from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 
 
 class CodeImplementationWorkflowWithIndex:
@@ -170,7 +168,9 @@ class CodeImplementationWorkflowWithIndex:
             await self._cleanup_mcp_agent()
 
     async def create_file_structure(
-        self, plan_content: str, target_directory: str
+        self,
+        plan_content: str,
+        target_directory: str,
     ) -> str:
         """Create file tree structure based on implementation plan"""
         self.logger.info("Starting file tree creation...")
@@ -210,7 +210,10 @@ Requirements:
             return result
 
     async def implement_code_pure(
-        self, plan_content: str, target_directory: str, code_directory: str = None
+        self,
+        plan_content: str,
+        target_directory: str,
+        code_directory: str = None,
     ) -> str:
         """Pure code implementation - focus on code writing without testing"""
         self.logger.info("Starting pure code implementation (no testing)...")
@@ -234,28 +237,6 @@ Requirements:
             system_message = PURE_CODE_IMPLEMENTATION_SYSTEM_PROMPT_INDEX
             messages = []
 
-            #             implementation_message = f"""**TASK: Implement Research Paper Reproduction Code**
-
-            # You are implementing a complete, working codebase that reproduces the core algorithms, experiments, and methods described in a research paper. Your goal is to create functional code that can replicate the paper's key results and contributions.
-
-            # **What you need to do:**
-            # - Analyze the paper content and reproduction plan to understand requirements
-            # - Implement all core algorithms mentioned in the main body of the paper
-            # - Create the necessary components following the planned architecture
-            # - Test each component to ensure functionality
-            # - Integrate components into a cohesive, executable system
-            # - Focus on reproducing main contributions rather than appendix-only experiments
-
-            # **RESOURCES:**
-            # - **Paper & Reproduction Plan**: `{target_directory}/` (contains .md paper files and initial_plan.txt with detailed implementation guidance)
-            # - **Reference Code Indexes**: `{target_directory}/indexes/` (JSON files with implementation patterns from related codebases)
-            # - **Implementation Directory**: `{code_directory}/` (your working directory for all code files)
-
-            # **CURRENT OBJECTIVE:**
-            # Start by reading the reproduction plan (`{target_directory}/initial_plan.txt`) to understand the implementation strategy, then examine the paper content to identify the first priority component to implement. Use the search_code tool to find relevant reference implementations from the indexes directory (`{target_directory}/indexes/*.json`) before coding.
-
-            # ---
-            # **START:** Review the plan above and begin implementation."""
             implementation_message = f"""**Task: Implement code based on the following reproduction plan**
 
 **Code Reproduction Plan:**
@@ -317,7 +298,6 @@ Requirements:
             )
 
         # Connect code agent with memory agent for summary generation
-        # Note: Concise memory agent doesn't need LLM client for summary generation
         code_agent.set_memory_agent(memory_agent, client, client_type)
 
         # Initialize memory agent with iteration 0
@@ -331,18 +311,8 @@ Requirements:
                 self.logger.warning(f"Time limit reached: {elapsed_time:.2f}s")
                 break
 
-            # # Test simplified memory approach if we have files implemented
-            # if iteration == 5 and code_agent.get_files_implemented_count() > 0:
-            #     self.logger.info("🧪 Testing simplified memory approach...")
-            #     test_results = await memory_agent.test_simplified_memory_approach()
-            #     self.logger.info(f"Memory test results: {test_results}")
-
-            # self.logger.info(f"Pure code implementation iteration {iteration}: generating code")
-
             messages = self._validate_messages(messages)
             current_system_message = code_agent.get_system_prompt()
-
-            # Round logging removed
 
             # Call LLM
             response = await self._call_llm_with_tools(
@@ -369,8 +339,6 @@ Requirements:
                         tool_result=tool_result.get("result"),
                     )
 
-                # NEW LOGIC: Check if write_file was called and trigger memory optimization immediately
-
                 # Determine guidance based on results
                 has_error = self._check_tool_results_for_errors(tool_results)
                 files_count = code_agent.get_files_implemented_count()
@@ -396,8 +364,6 @@ Requirements:
                         current_system_message, messages, files_implemented_count
                     )
 
-                    # Memory optimization completed
-
             else:
                 files_count = code_agent.get_files_implemented_count()
                 no_tools_guidance = self._generate_no_tools_guidance(files_count)
@@ -414,9 +380,6 @@ Requirements:
             # Record file implementations in memory agent (for the current round)
             for file_info in code_agent.get_implementation_summary()["completed_files"]:
                 memory_agent.record_file_implementation(file_info["file"])
-
-            # REMOVED: Old memory optimization logic - now happens immediately after write_file
-            # Memory optimization is now triggered immediately after write_file detection
 
             # Start new round for next iteration, sync with workflow iteration
             memory_agent.start_new_round(iteration=iteration)
@@ -506,48 +469,48 @@ Requirements:
                 from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
                 client = GeminiAugmentedLLM(api_key=gemini_key)
                 
-                # Simple check relying on successful class initialization
-                
                 self.logger.info("Using Gemini API with GeminiAugmentedLLM")
                 return client, "gemini"
             except Exception as e:
                 self.logger.warning(f"Gemini API initialization failed: {e}")
-                # Fallthrough to final error if necessary
         
-        # Raise error if no key found (since this is Gemini-exclusive now)
         raise ValueError(
             "No available LLM API - Gemini API key not found in mcp_agent.secrets.yaml"
         )
 
     async def _call_llm_with_tools(
-        self, client, client_type, system_message, messages, tools, max_tokens=8192
+        self,
+        client,
+        client_type,
+        system_message,
+        messages,
+        tools,
+        max_tokens=8192,
     ):
         """Call LLM with tools"""
         try:
             if client_type == "gemini":
-                # Route to the dedicated Gemini call handler
                 return await self._call_gemini_with_tools(
                     client, system_message, messages, tools, max_tokens
                 )
             else:
-                # This should not happen if _initialize_llm_client is correct
                 raise ValueError(f"Unsupported client type: {client_type}")
         except Exception as e:
             self.logger.error(f"LLM call failed: {e}")
             raise
 
     async def _call_gemini_with_tools(
-        self, client, system_message, messages, tools, max_tokens
+        self,
+        client,
+        system_message,
+        messages,
+        tools,
+        max_tokens,
     ):
         """Call Gemini API"""
-        # This implementation assumes that the client object is the initialized GeminiAugmentedLLM 
-        # which wraps the actual Google GenAI SDK client and handles the tool formatting.
-
         validated_messages = self._validate_messages(messages)
 
         try:
-            # The GeminiAugmentedLLM class must expose a method (like chat_with_tools)
-            # that handles the system prompt, messages, tools, and returns the unified format.
             response = await client.chat_with_tools(
                 model=self.default_models["gemini"],
                 system_message=system_message,
@@ -557,7 +520,6 @@ Requirements:
                 temperature=0.2,
             )
             
-            # The custom class must return the unified format: {"content": content, "tool_calls": tool_calls}
             content = response.get("content", "")
             tool_calls = response.get("tool_calls", [])
             
@@ -583,7 +545,7 @@ Requirements:
         return valid_messages
 
     def _prepare_mcp_tool_definitions(self) -> List[Dict[str, Any]]:
-        """Prepare tool definitions in Anthropic API standard format"""
+        """Prepare tool definitions"""
         return get_mcp_tools("code_implementation")
 
     def _check_tool_results_for_errors(self, tool_results: List[Dict]) -> bool:
@@ -832,10 +794,7 @@ async def main():
         print("\nContinuing with workflow execution...")
 
         plan_file = "/Users/lizongwei/Reasearch/DeepCode_Base/DeepCode/deepcode_lab/papers/1/initial_plan.txt"
-        # plan_file = "/data2/bjdwhzzh/project-hku/Code-Agent2.0/Code-Agent/deepcode-mcp/agent_folders/papers/1/initial_plan.txt"
-        target_directory = (
-            "/Users/lizongwei/Reasearch/DeepCode_Base/DeepCode/deepcode_lab/papers/1/"
-        )
+        target_directory ="/Users/lizongwei/Reasearch/DeepCode_Base/DeepCode/deepcode_lab/papers/1/"
         print("Implementation Mode Selection:")
         print("1. Pure Code Implementation Mode (Recommended)")
         print("2. Iterative Implementation Mode")
@@ -844,15 +803,9 @@ async def main():
         mode_name = "Pure Code Implementation Mode with Memory Agent Architecture + Code Reference Indexer"
         print(f"Using: {mode_name}")
 
-        # Configure read tools - modify this parameter to enable/disable read tools
-        enable_read_tools = (
-            True  # Set to False to disable read_file and read_code_mem tools
-        )
+        enable_read_tools = True
         read_tools_status = "ENABLED" if enable_read_tools else "DISABLED"
         print(f"🔧 Read tools (read_file, read_code_mem): {read_tools_status}")
-
-        # NOTE: To test without read tools, change the line above to:
-        # enable_read_tools = False
 
         result = await workflow.run_workflow(
             plan_file,

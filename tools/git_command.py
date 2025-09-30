@@ -166,7 +166,7 @@ async def download_github_repo(instruction: str) -> str:
         Status message about the download operation
 
     Examples:
-        - "Download https://github.com/openai/gpt-3"
+        
         - "Clone microsoft/vscode to my-projects folder"
         - "Get https://github.com/facebook/react"
     """

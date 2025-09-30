@@ -323,7 +323,7 @@ project/
                 "output_dir": os.path.join(paper_dir, "indexes"),
             },
             "llm": {
-                "model_provider": "anthropic",
+                "model_provider": "gemini",
                 "max_tokens": 4000,
                 "temperature": 0.3,
                 "request_delay": 0.5,  # Increase request delay

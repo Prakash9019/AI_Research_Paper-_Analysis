@@ -463,8 +463,6 @@ curl -O https://raw.githubusercontent.com/HKUDS/DeepCode/main/mcp_agent.secrets.
 
 # 🔑 Configure API keys (required)
 # Edit mcp_agent.secrets.yaml with your API keys and base_url:
-# - openai: api_key, base_url (for OpenAI/custom endpoints)
-# - anthropic: api_key (for Claude models)
 
 # 🔑 Configure search API keys for web search (optional)
 # Edit mcp_agent.config.yaml to set your API keys:
@@ -499,8 +497,6 @@ uv pip install -r requirements.txt
 
 # 🔑 Configure API keys (required)
 # Edit mcp_agent.secrets.yaml with your API keys and base_url:
-# - openai: api_key, base_url (for OpenAI/custom endpoints)
-# - anthropic: api_key (for Claude models)
 
 # 🔑 Configure search API keys for web search (optional)
 # Edit mcp_agent.config.yaml to set your API keys:
@@ -525,8 +521,6 @@ pip install -r requirements.txt
 
 # 🔑 Configure API keys (required)
 # Edit mcp_agent.secrets.yaml with your API keys and base_url:
-# - openai: api_key, base_url (for OpenAI/custom endpoints)
-# - anthropic: api_key (for Claude models)
 
 # 🔑 Configure search API keys for web search (optional)
 # Edit mcp_agent.config.yaml to set your API keys:

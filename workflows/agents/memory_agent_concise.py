@@ -777,18 +777,18 @@ class ConciseMemoryAgent:
         (Gemini only)
         """
         if client_type == "gemini":
-            openai_messages = [
+            summary_messages = [
                 {
                     "role": "system",
                     "content": "You are an expert code implementation summarizer. Create structured summaries of implemented code files that preserve essential information about functions, dependencies, and implementation approaches.",
                 }
             ]
-            openai_messages.extend(summary_messages)
+            summary_messages.extend(summary_messages)
 
             try:
                 response = await client.chat.completions.create(
                     model=self.default_models["gemini"],
-                    messages=openai_messages,
+                    messages=summary_messages,
                     max_tokens=5000,
                     temperature=0.2,
                 )
@@ -798,13 +798,12 @@ class ConciseMemoryAgent:
                     # Retry with max_completion_tokens for models that require it
                     response = await client.chat.completions.create(
                         model=self.default_models["gemini"],
-                        messages=openai_messages,
+                        messages=summary_messages,
                         max_completion_tokens=5000,
                     )
                 else:
                     raise
 
-            # Assuming the client returns a structured response similar to OpenAI's
             return {"content": response.choices[0].message.content or ""}
 
         else:

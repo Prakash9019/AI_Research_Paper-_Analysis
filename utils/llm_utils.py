@@ -11,8 +11,6 @@ from typing import Any, Type, Dict, Tuple
 
 # Import LLM classes
 from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
-# Removed: from mcp_agent.workflows.llm.augmented_llm_anthropic import AnthropicAugmentedLLM
-# Removed: from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 
 
 def get_preferred_llm_class(config_path: str = "mcp_agent.secrets.yaml") -> Type[Any]:
@@ -39,7 +37,7 @@ def get_preferred_llm_class(config_path: str = "mcp_agent.secrets.yaml") -> Type
             gemini_key = gemini_config.get("api_key", "")
 
             if gemini_key and gemini_key.strip() and not gemini_key == "":
-                return GeminiAugmentedLLM
+                return GeminiAugmentedLLM(api_key=gemini_key)
             else:
                 raise ValueError("Gemini API key not found in mcp_agent.secrets.yaml")
         else:

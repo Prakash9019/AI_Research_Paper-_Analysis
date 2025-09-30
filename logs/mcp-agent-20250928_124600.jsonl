@@ -1,0 +1,1 @@
+{"level":"INFO","timestamp":"2025-09-28T12:46:00.429351","namespace":"mcp_agent.cli_agent_orchestration","message":"MCPApp cleanup","data":{"data":{"progress_action":"Finished","target":"cli_agent_orchestration","agent_name":"mcp_application_loop"}}}
