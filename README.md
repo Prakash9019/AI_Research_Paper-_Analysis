@@ -157,7 +157,7 @@
 
 <div align="center" style="margin: 15px 0;">
   <img src="https://img.shields.io/badge/ALGORITHM-IMPLEMENTATION-ff6b6b?style=for-the-badge&logo=algorithm&logoColor=white" alt="Algorithm Badge" />
-</div>
+</div>F
 
 <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
 <p align="center"><strong>Automated Implementation of Complex Algorithms</strong></p>
