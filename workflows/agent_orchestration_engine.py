@@ -222,7 +222,8 @@ async def run_research_analyzer(prompt_text: str, logger) -> str:
                 print(f"Failed to list tools: {e}")
 
             try:
-                analyzer = await analyzer_agent.attach_llm(get_preferred_llm_class())
+                llm_factory = get_preferred_llm_class()
+                analyzer = await analyzer_agent.attach_llm(llm_factory())
                 print("✅ LLM attached successfully")
             except Exception as e:
                 print(f"❌ Failed to attach LLM: {e}")
@@ -318,7 +319,8 @@ async def run_resource_processor(analysis_result: str, logger) -> str:
             tools.model_dump() if hasattr(tools, "model_dump") else str(tools),
         )
 
-        processor = await processor_agent.attach_llm(get_preferred_llm_class())
+        llm_factory = get_preferred_llm_class()
+        processor = await processor_agent.attach_llm(llm_factory())
 
         # Set higher token output for resource processing
         processor_params = RequestParams(
@@ -428,7 +430,8 @@ async def github_repo_download(search_result: str, paper_dir: str, logger) -> st
 
     async with github_download_agent:
         print("GitHub downloader: Downloading repositories...")
-        downloader = await github_download_agent.attach_llm(get_preferred_llm_class())
+        llm_factory = get_preferred_llm_class()
+        downloader = await github_download_agent.attach_llm(llm_factory())
 
         # Set higher token output for GitHub download
         github_params = RequestParams(
@@ -472,7 +475,8 @@ Goal: Find the most valuable GitHub repositories from the paper's reference list
 
     async with reference_analysis_agent:
         print("Reference analyzer: Connected to server, analyzing references...")
-        analyzer = await reference_analysis_agent.attach_llm(get_preferred_llm_class())
+        llm_factory = get_preferred_llm_class()
+        analyzer = await reference_analysis_agent.attach_llm(llm_factory())
 
         reference_result = await analyzer.generate_str(message=message)
         return reference_result
@@ -1121,9 +1125,8 @@ async def run_chat_planning_agent(user_input: str, logger) -> str:
                 print(f"Failed to list tools: {e}")
 
             try:
-                planner = await chat_planning_agent.attach_llm(
-                    get_preferred_llm_class()
-                )
+                llm_factory = get_preferred_llm_class()
+                planner = await chat_planning_agent.attach_llm(llm_factory())
                 print("✅ LLM attached successfully")
             except Exception as e:
                 print(f"❌ Failed to attach LLM: {e}")

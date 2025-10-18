@@ -10,7 +10,7 @@ import yaml
 from typing import Any, Type, Dict, Tuple
 
 # Import LLM classes
-from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
+from workflows.augmented_llm_gemini import GeminiAugmentedLLM
 
 
 def get_preferred_llm_class(config_path: str = "mcp_agent.secrets.yaml") -> Type[Any]:

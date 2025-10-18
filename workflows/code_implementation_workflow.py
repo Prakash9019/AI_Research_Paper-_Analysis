@@ -37,7 +37,7 @@ from config.mcp_tool_definitions import get_mcp_tools
 from utils.llm_utils import get_preferred_llm_class, get_default_models
 
 # Import necessary LLM classes
-from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
+from workflows.augmented_llm_gemini import GeminiAugmentedLLM
 # from mcp_agent.workflows.llm.augmented_llm_anthropic import AnthropicAugmentedLLM
 # Removed: from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 
@@ -183,12 +183,8 @@ class CodeImplementationWorkflow:
         )
 
         async with structure_agent:
-            llm_class = get_preferred_llm_class(self.config_path)
-            creator = await structureagent.attach_llm(llm_class())
-
-            # creator = await structure_agent.attach_llm(
-            #     get_preferred_llm_class(self.config_path)
-            # )
+            llm_factory = get_preferred_llm_class(self.config_path)
+            creator = await structure_agent.attach_llm(llm_factory())
 
             message = f"""Analyze the following implementation plan and generate shell commands to create the file tree structure.
 
@@ -429,13 +425,9 @@ Requirements:
             )
 
             await self.mcp_agent.__aenter__()
-            # llm = await self.mcp_agent.attach_llm(
-            #     get_preferred_llm_class(self.config_path)
-            # )
-            llm_class = get_preferred_llm_class(self.config_path)
-            llm = await self.mcpagent.attach_llm(llm_class())
+            llm_factory = get_preferred_llm_class(self.config_path)
+            llm = await self.mcp_agent.attach_llm(llm_factory())
 
-            # Set workspace to the target code directory
             workspace_result = await self.mcp_agent.call_tool(
                 "set_workspace", {"workspace_path": code_directory}
             )
@@ -472,7 +464,7 @@ Requirements:
         # Try Gemini API
         if gemini_key and gemini_key.strip():
             try:
-                from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM
+                from workflows.augmented_llm_gemini import GeminiAugmentedLLM
                 client = GeminiAugmentedLLM(api_key=gemini_key)
                 
                 self.logger.info("Using Gemini API with GeminiAugmentedLLM")

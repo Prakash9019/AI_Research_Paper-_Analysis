@@ -26,7 +26,7 @@ from typing import List, Dict, Any
 # MCP Agent imports for LLM
 import yaml
 from utils.llm_utils import get_preferred_llm_class
-from mcp_agent.workflows.llm.augmented_llm_gemini import GeminiAugmentedLLM # Import Gemini
+from workflows.augmented_llm_gemini import GeminiAugmentedLLM # Import Gemini
 
 
 def get_default_models(config_path: str = "mcp_agent.config.yaml"):
@@ -350,15 +350,7 @@ class CodeIndexer:
 
         if gemini_key and gemini_key.strip():
             try:
-                # Use the custom GeminiAugmentedLLM wrapper
-                client = GeminiAugmentedLLM(api_key=gemini_key)
-                
-                # Simple check using the client wrapper
-                # await client.generate_str(
-                #     model=self.default_models["gemini"],
-                #     prompt="test",
-                #     max_tokens=10
-                # )
+                client = GeminiAugmentedLLM(api_key=gemini_key, model_name=self.default_models["gemini"])
                 
                 self.logger.info(
                     f"Using Gemini API with model: {self.default_models['gemini']}"
