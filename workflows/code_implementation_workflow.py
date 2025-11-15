@@ -465,7 +465,9 @@ Requirements:
         if gemini_key and gemini_key.strip():
             try:
                 from workflows.augmented_llm_gemini import GeminiAugmentedLLM
-                client = GeminiAugmentedLLM(api_key=gemini_key)
+                client = GeminiAugmentedLLM(
+                    api_key=gemini_key, model_name=self.default_models["gemini"]
+                )
                 
                 self.logger.info("Using Gemini API with GeminiAugmentedLLM")
                 return client, "gemini"

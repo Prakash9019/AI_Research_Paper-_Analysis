@@ -1,6 +1,5 @@
 aiofiles>=0.8.0
 aiohttp>=3.8.0
-
 asyncio-mqtt
 docling
 mcp-agent
@@ -9,4 +8,7 @@ nest_asyncio
 pathlib2
 PyPDF2>=2.0.0
 reportlab>=3.5.0
-streamlit
+streamlit>=1.28.0
+pyyaml
+reportlab
+google.generativeai
